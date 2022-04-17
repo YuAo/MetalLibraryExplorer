@@ -5,12 +5,14 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf ./src/MetalLibraryArchiveParser/.build",
-    "build": "xcrun --toolchain swiftwasm swift build --package-path ./src/MetalLibraryArchiveParser --triple wasm32-unknown-wasi -c release -Xlinker --export=parseMetalLib && wasm-strip ./src/MetalLibraryArchiveParser/.build/release/MetalLibraryArchiveParser.wasm && webpack"
+    "build": "xcrun --toolchain swiftwasm swift build --package-path ./src/MetalLibraryArchiveParser --triple wasm32-unknown-wasi -c release -Xlinker --export=parseMetalLib && wasm-strip ./src/MetalLibraryArchiveParser/.build/release/MetalLibraryArchiveParser.wasm && wasm-opt -Os ./src/MetalLibraryArchiveParser/.build/release/MetalLibraryArchiveParser.wasm -o ./src/MetalLibraryArchiveParser/.build/release/MetalLibraryArchiveParser.wasm && webpack"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/preset-react": "^7.16.7",
+    "babel-loader": "^8.2.4",
     "buffer": "^6.0.3",
     "html-webpack-plugin": "^5.5.0",
     "webpack": "^5.72.0",
@@ -19,6 +21,9 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "@wasmer/wasi": "^1.0.2"
+    "@wasmer/wasi": "^1.0.2",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-syntax-highlighter": "^15.5.0"
   }
 }

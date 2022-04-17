@@ -8,10 +8,11 @@ module.exports = {
         index: './src/index.js',
     },
     module: {
-        // rules: [{
-        //     test: /llvm-dis.wasm/,
-        //     type: 'asset/inline'
-        // }]
+        rules: [{
+            test: /\.(js|jsx)$/,
+            exclude: /node_modules/,
+            use: ['babel-loader'],
+        }]
     },
     output: {
         filename: 'bundle.js',
@@ -23,6 +24,7 @@ module.exports = {
         'wasmer_wasi_js_bg.wasm': true
     },
     resolve: {
+        extensions: ['*', '.js', '.jsx'],
         fallback: {
             buffer: require.resolve('buffer/'),
         },

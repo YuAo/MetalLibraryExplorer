@@ -15,6 +15,7 @@ struct FileIO {
         case cannotGetFileInformation(String)
         case cannotReadFile(String)
         case cannotWriteFile(String)
+        case fileTooLarge(String)
     }
     
     static func readData(from url: URL) throws -> Data {
@@ -26,6 +27,9 @@ struct FileIO {
         defer {
             close(file)
         }
+        
+        // Cannot get the correct file size: https://github.com/wasmerio/wasmer/issues/2848
+        /*
         var fileInformation: stat = stat()
         guard fstat(file, &fileInformation) >= 0 else {
             let message = String(cString: strerror(errno))
@@ -33,7 +37,10 @@ struct FileIO {
         }
         let fileSize = fileInformation.st_size
         print("File size: \(fileSize)");
-        var buffer = Data(count: Int(16 * 1024 * 1024))
+        */
+        
+        // Use a 8M buffer as a temporary fallback.
+        var buffer = Data(count: Int(8 * 1024 * 1024))
         let readResult = buffer.withUnsafeMutableBytes({ (ptr: UnsafeMutableRawBufferPointer) -> Int in
             read(file, ptr.baseAddress, ptr.count)
         })
@@ -41,7 +48,9 @@ struct FileIO {
             let message = String(cString: strerror(errno))
             throw Error.cannotReadFile(message)
         }
-        print("Read size: \(readResult)");
+        if readResult == buffer.count {
+            throw Error.fileTooLarge("File reader currently has a 8MB limit.")
+        }
         return buffer[0..<readResult];
     }
     
