@@ -1,5 +1,5 @@
 import { MetalLibraryParser_WebWorker } from "./parser.js";
-import { LLVMDissambler } from "./disassembler.js";
+import { LLVMDisassembler } from "./disassembler.js";
 import { Utilities } from "./utilities.js";
 import React, { useState, useEffect } from 'react';
 
@@ -35,7 +35,7 @@ class App {
         let disassemblerModuleData = await fetch(new URL("./llvm-dis.wasm", import.meta.url));
         // Wait for data loading.
         await disassemblerModuleData.clone().blob();
-        this.disassembler = new LLVMDissambler(disassemblerModuleData);
+        this.disassembler = new LLVMDisassembler(disassemblerModuleData);
 
         progressCallback("Ready.");
     }

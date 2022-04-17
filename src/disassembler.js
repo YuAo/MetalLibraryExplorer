@@ -1,6 +1,6 @@
 import LLVMDis from "./llvm-dis.js";
 
-export class LLVMDissambler {
+export class LLVMDisassembler {
     constructor(programData) {
         this.programData = programData;
         this.textDecoder = new TextDecoder();
