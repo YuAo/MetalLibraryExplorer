@@ -1,5 +1,5 @@
 import { MetalLibraryParser_WebWorker } from "./parser.js";
-import { LLVMDissambler } from "./dissambler.js";
+import { LLVMDissambler } from "./disassembler.js";
 import { Utilities } from "./utilities.js";
 import React, { useState, useEffect } from 'react';
 
