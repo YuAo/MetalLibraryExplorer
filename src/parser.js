@@ -17,7 +17,6 @@ export class MetalLibraryParser {
 
         const metallib = parser.fs.open("/default.metallib", { write: true, create: true, truncate: true });
         metallib.write(new Uint8Array(buffer));
-        metallib.flush();
         
         const parserExitCode = parseMetalLib();
         const parserOutput = parser.getStdoutString();
