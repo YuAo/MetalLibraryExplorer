@@ -7,11 +7,17 @@ module.exports = {
         index: './src/index.js',
     },
     module: {
-        rules: [{
-            test: /\.(js|jsx)$/,
-            exclude: /node_modules/,
-            use: ['babel-loader'],
-        }]
+        rules: [
+            {
+                test: /\.(js|jsx)$/,
+                exclude: /node_modules/,
+                use: ['babel-loader'],
+            },
+            {
+                test: /\.css$/i,
+                use: ['style-loader', 'css-loader'],
+            }
+        ]
     },
     output: {
         filename: '[name].[contenthash].js',
