@@ -10,6 +10,23 @@ import hljsNightOwl from 'react-syntax-highlighter/dist/esm/styles/hljs/night-ow
 
 SyntaxHighlighter.registerLanguage('llvm', hljsLLVM);
 
+const useMediaQuery = (query) => {
+    if (typeof window === 'undefined' || typeof window.matchMedia === 'undefined') {
+        return false;
+    }
+
+    const mediaQuery = window.matchMedia(query);
+    const [match, setMatch] = React.useState(!!mediaQuery.matches);
+
+    React.useEffect(() => {
+        const handler = () => setMatch(!!mediaQuery.matches);
+        mediaQuery.addEventListener('change', handler);
+        return () => mediaQuery.removeEventListener('change', handler);
+    }, []);
+
+    return match;
+};
+
 class App {
     async load(progressCallback) {
         progressCallback("Loading Parser...");
@@ -43,8 +60,31 @@ class App {
 
 const app = new App();
 
+class DarkModeObserver {
+    constructor() {
+        this.observers = [];
+        this.darkMode = false;
+        this.observe();
+    }
+
+    observe() {
+        if (window.matchMedia) {
+            const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+            mediaQueryList.addEventListener('change', (event) => {
+                this.darkMode = event.matches;
+                this.observers.forEach(observer => observer(this.darkMode));
+            });
+        }
+    }
+
+    subscribe(observer) {
+        this.observers.push(observer);
+        observer(this.darkMode);
+    }
+}
+
 const Spinner = () => <div>Loading...</div>
-const ErrorView = ({ error }) => <div>{ error.message }</div>
+const ErrorView = ({ error }) => <div>{error.message}</div>
 
 const AssemblyView = (props) => {
     const [ll, setLL] = useState(null);
@@ -62,16 +102,18 @@ const AssemblyView = (props) => {
         })()
     }, [props]);
 
+    const style = useMediaQuery('(prefers-color-scheme: dark)') ? hljsNightOwl : hljsDocco;
+
     if (!ll) {
         return <Spinner />;
     } else {
         return <>
             <h3>{props.function.name}</h3>
-            <SyntaxHighlighter 
-            language="llvm"
-            style={hljsDocco}
-            showLineNumbers={true} 
-            lineNumberStyle={ {opacity: 0.3} }>
+            <SyntaxHighlighter
+                language="llvm"
+                style={ style }
+                showLineNumbers={true}
+                lineNumberStyle={{ opacity: 0.3 }}>
                 {ll}
             </SyntaxHighlighter>
         </>
