@@ -4,4 +4,8 @@ import { AppView } from "./app.jsx";
 
 const container = document.getElementById('app');
 const root = createRoot(container);
-root.render(<AppView />);
+root.render(
+    <React.StrictMode>
+        <AppView />
+    </React.StrictMode>
+);

@@ -60,29 +60,6 @@ class App {
 
 const app = new App();
 
-class DarkModeObserver {
-    constructor() {
-        this.observers = [];
-        this.darkMode = false;
-        this.observe();
-    }
-
-    observe() {
-        if (window.matchMedia) {
-            const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
-            mediaQueryList.addEventListener('change', (event) => {
-                this.darkMode = event.matches;
-                this.observers.forEach(observer => observer(this.darkMode));
-            });
-        }
-    }
-
-    subscribe(observer) {
-        this.observers.push(observer);
-        observer(this.darkMode);
-    }
-}
-
 const Spinner = () => <div>Loading...</div>
 const ErrorView = ({ error }) => <div>{error.message}</div>
 
@@ -109,13 +86,9 @@ const AssemblyView = (props) => {
     } else {
         return <>
             <h3>{props.function.name}</h3>
-            <SyntaxHighlighter
-                language="llvm"
-                style={ style }
-                showLineNumbers={true}
-                lineNumberStyle={{ opacity: 0.3 }}>
-                {ll}
-            </SyntaxHighlighter>
+            {
+                ll.length > 256 * 1024 ? <pre>{ll}</pre> : <SyntaxHighlighter language="llvm" style={ style } showLineNumbers={true} lineNumberStyle={{ opacity: 0.3 }}>{ll}</SyntaxHighlighter>
+            }
         </>
     }
 }
