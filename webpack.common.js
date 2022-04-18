@@ -3,7 +3,6 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    mode: 'development',
     entry: {
         index: './src/index.js',
     },
@@ -19,7 +18,6 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         clean: true,
     },
-    devtool: 'inline-source-map',
     externals: {
         'wasmer_wasi_js_bg.wasm': true
     },

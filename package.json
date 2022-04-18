@@ -5,7 +5,10 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf ./src/MetalLibraryArchiveParser/.build",
-    "build": "xcrun --toolchain swiftwasm swift build --package-path ./src/MetalLibraryArchiveParser --triple wasm32-unknown-wasi -c release -Xlinker --export=parseMetalLib && wasm-strip ./src/MetalLibraryArchiveParser/.build/release/MetalLibraryArchiveParser.wasm && wasm-opt -Os ./src/MetalLibraryArchiveParser/.build/release/MetalLibraryArchiveParser.wasm -o ./src/MetalLibraryArchiveParser/.build/release/MetalLibraryArchiveParser.wasm && webpack"
+    "build-parser": "xcrun --toolchain swiftwasm swift build --package-path ./src/MetalLibraryArchiveParser --triple wasm32-unknown-wasi -c release -Xlinker --export=parseMetalLib",
+    "optimize-parser": "wasm-strip ./src/MetalLibraryArchiveParser/.build/release/MetalLibraryArchiveParser.wasm && wasm-opt -Os ./src/MetalLibraryArchiveParser/.build/release/MetalLibraryArchiveParser.wasm -o ./src/MetalLibraryArchiveParser/.build/release/MetalLibraryArchiveParser.wasm",
+    "start": "npm run build-parser && webpack serve --open --config webpack.dev.js",
+    "build": "npm run clean && npm run build-parser && npm run optimize-parser && webpack --config webpack.prod.js"
   },
   "keywords": [],
   "author": "",
