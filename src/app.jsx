@@ -2,6 +2,8 @@ import { MetalLibraryParser_WebWorker } from "./parser.js";
 import { LLVMDisassembler } from "./disassembler.js";
 import { Utilities } from "./utilities.js";
 import React, { useState, useEffect } from 'react';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import hljsLLVM from 'react-syntax-highlighter/dist/esm/languages/hljs/llvm';
@@ -73,6 +75,21 @@ class App {
             this.disassemblerCache[hash] = code;
             return code;
         }
+    }
+
+    async downloadAssemblyArchive(archive, name) {
+        var zip = new JSZip();
+        var archivedBitcodeHashs = new Set();
+        for (const f of archive.functions) {
+            if (!archivedBitcodeHashs.has(f.bitcodeID)) {
+                const bitcode = Utilities.base64Decode(archive.bitcodeTable[f.bitcodeID]);
+                const ll = await this.disassemble(bitcode, f.bitcodeID);
+                zip.file(f.name + ".ll", ll);
+                archivedBitcodeHashs.add(f.bitcodeID);
+            }
+        }
+        const data = await zip.generateAsync({type:"blob"})
+        saveAs(data, name + ".ll.zip");
     }
 }
 
@@ -273,12 +290,17 @@ const ArchiveView = ({ file }) => {
                     <ul className="p-6 space-y-4">
                         <li>
                             <div className="bg-blue-100 rounded-xl text-blue-900 text-sm overflow-hidden">
-                                <div className="px-4 py-3 font-medium bg-blue-400 text-white border-b border-blue-900/10">{file.name}</div>
+                                <div className="px-4 py-3 font-medium bg-blue-500 text-white">{file.name}</div>
                                 <div className="p-4 space-y-1">
                                     <p><span className="font-bold mr-1">Size:</span><span>{formatFileSize(file.size, true)}</span></p>
                                     <p><span className="font-bold mr-1">Type:</span><span>{archive.type}</span></p>
                                     <p><span className="font-bold mr-1">Targeting:</span><span>{archive.targetPlatform}</span></p>
                                     <p><span className="font-bold mr-1">Functions:</span><span>{archive.functions.length}</span></p>
+                                    <div>
+                                        <button type="button" class="mt-2 text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-normal rounded-xl text-sm px-5 py-2.5 focus:outline-none" onClick={() => {
+                                            app.downloadAssemblyArchive(archive, file.name);
+                                        }}>Download Assembly.zip</button>
+                                    </div>
                                 </div>
                             </div>
                         </li>
