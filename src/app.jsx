@@ -32,6 +32,7 @@ const useMediaQuery = (query) => {
 class App {
     async load(progressCallback) {
         progressCallback("Loading Parser...");
+        this.disassemblerCache = {};
         /*
         await init();
         const parserProgram = await (async () => {
@@ -57,6 +58,21 @@ class App {
         this.disassembler = new LLVMDisassembler(disassemblerModuleData);
 
         progressCallback("Ready.");
+    }
+
+    async parse(buffer) {
+        return this.parser.parse(buffer);
+    }
+
+    async disassemble(bitcode, hash) {
+        const cachedCode = this.disassemblerCache[hash];
+        if (cachedCode) {
+            return cachedCode;
+        } else {
+            const code = await this.disassembler.disassemble(bitcode);
+            this.disassemblerCache[hash] = code;
+            return code;
+        }
     }
 }
 
@@ -109,7 +125,7 @@ const AssemblyView = (props) => {
                 setError(null);
                 setLL(null);
                 const bitcode = Utilities.base64Decode(props.archive.bitcodeTable[props.function.bitcodeID]);
-                const ll = await app.disassembler.disassemble(bitcode);
+                const ll = await app.disassemble(bitcode, props.function.bitcodeID);
                 setLL(ll);
             } catch (error) {
                 setError(error);
@@ -177,7 +193,7 @@ const AssemblyView = (props) => {
             </div>
             <div className="flex-1">
                 {
-                    ll.length > 256 * 1024 ? <pre className="p-6">{ll}</pre> : <SyntaxHighlighter language="llvm" style={style} showLineNumbers={true} lineNumberStyle={{ opacity: 0.3 }}>{ll}</SyntaxHighlighter>
+                    ll.length > 64 * 1024 ? <pre className="p-6">{ll}</pre> : <SyntaxHighlighter language="llvm" style={style} showLineNumbers={true} lineNumberStyle={{ opacity: 0.3 }}>{ll}</SyntaxHighlighter>
                 }
             </div>
         </>;
@@ -199,7 +215,7 @@ const ArchiveView = ({ file }) => {
                 setArchive(null);
                 setSelectedFunction(null);
                 const buffer = await file.arrayBuffer();
-                const archive = await app.parser.parse(buffer);
+                const archive = await app.parse(buffer);
                 setArchive(archive);
             } catch (error) {
                 setError(error);
