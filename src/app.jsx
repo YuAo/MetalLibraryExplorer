@@ -12,7 +12,7 @@ import hljsNightOwl from 'react-syntax-highlighter/dist/esm/styles/hljs/night-ow
 
 SyntaxHighlighter.registerLanguage('llvm', hljsLLVM);
 
-import "./app.css"
+import "./app.css";
 
 const useMediaQuery = (query) => {
     if (typeof window === 'undefined' || typeof window.matchMedia === 'undefined') {
@@ -88,8 +88,8 @@ class App {
                 archivedBitcodeHashs.add(f.bitcodeID);
             }
         }
-        const data = await zip.generateAsync({type:"blob"})
-        saveAs(data, name + ".ll.zip");
+        const data = await zip.generateAsync({ type: "blob" })
+        saveAs(data, name);
     }
 }
 
@@ -103,7 +103,7 @@ const SpinnerView = ({ tip }) => <div className="overflow-y-auto h-full w-full">
             {tip ? <p className="text-sm text-slate-500">{tip}</p> : null}
         </div>
     </div>
-</div>
+</div>;
 
 const ErrorView = ({ title, error, recoveryTitle, recoveryAction }) => <div className="overflow-y-auto h-full w-full">
     <div className="h-full text-center block p-0 bg-slate-50">
@@ -129,7 +129,7 @@ const ErrorView = ({ title, error, recoveryTitle, recoveryAction }) => <div clas
             </div> : null}
         </div>
     </div>
-</div>
+</div>;
 
 
 const AssemblyView = (props) => {
@@ -217,7 +217,15 @@ const AssemblyView = (props) => {
     } else {
         return <SpinnerView />;
     }
-}
+};
+
+const AssemblyArchiveDownloadButton = ({ archive, fileName }) => {
+    return <div>
+        <button type="button" className="mt-2 text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-normal rounded-xl text-sm px-5 py-2.5 focus:outline-none" onClick={() => {
+            app.downloadAssemblyArchive(archive, fileName);
+        }}>Download Assembly.zip</button>
+    </div>;
+};
 
 const ArchiveView = ({ file }) => {
     const [error, setError] = useState(null);
@@ -296,11 +304,7 @@ const ArchiveView = ({ file }) => {
                                     <p><span className="font-bold mr-1">Type:</span><span>{archive.type}</span></p>
                                     <p><span className="font-bold mr-1">Targeting:</span><span>{archive.targetPlatform}</span></p>
                                     <p><span className="font-bold mr-1">Functions:</span><span>{archive.functions.length}</span></p>
-                                    <div>
-                                        <button type="button" class="mt-2 text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-normal rounded-xl text-sm px-5 py-2.5 focus:outline-none" onClick={() => {
-                                            app.downloadAssemblyArchive(archive, file.name);
-                                        }}>Download Assembly.zip</button>
-                                    </div>
+                                    { archive.functions.length > 0 ? <AssemblyArchiveDownloadButton archive={archive} fileName={ file.name + ".ll.zip" } /> : null }
                                 </div>
                             </div>
                         </li>
@@ -331,9 +335,9 @@ const ArchiveView = ({ file }) => {
     } else {
         return <SpinnerView />;
     }
-}
+};
 
-const FullViewport = ({ children, className }) => <div className={"h-screen w-full " + className}>{children}</div>
+const FullViewport = ({ children, className }) => <div className={"h-screen w-full " + className}>{children}</div>;
 
 export const AppView = () => {
     const [error, setError] = useState(null);
@@ -389,4 +393,4 @@ export const AppView = () => {
             </FullViewport>;
         }
     }
-}
+};
