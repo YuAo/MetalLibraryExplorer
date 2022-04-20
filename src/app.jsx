@@ -308,7 +308,7 @@ const ArchiveView = ({ file }) => {
     }
 
     if (error) {
-        return <ErrorView title="Error parsing archive" error={error} />;
+        return <ErrorView title={`Error parsing "${file.name}"`} error={error} />;
     } else if (archive) {
         return (
             <main className="flex flex-row flex-1 h-full overflow-auto">
