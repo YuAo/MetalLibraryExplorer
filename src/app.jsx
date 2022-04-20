@@ -88,6 +88,7 @@ class App {
             const f = archive.functions[i];
             if (!archivedBitcodeHashs.has(f.bitcodeID)) {
                 const bitcode = Utilities.base64Decode(archive.bitcodeTable[f.bitcodeID]);
+                zip.file(f.name + ".air", bitcode);
                 const ll = await this.disassemble(bitcode, f.bitcodeID);
                 zip.file(f.name + ".ll", ll);
                 archivedBitcodeHashs.add(f.bitcodeID);
