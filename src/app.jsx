@@ -77,18 +77,28 @@ class App {
         }
     }
 
-    async downloadAssemblyArchive(archive, name) {
-        var zip = new JSZip();
-        var archivedBitcodeHashs = new Set();
-        for (const f of archive.functions) {
+    async downloadAssemblyArchive(archive, name, progressCallback) {
+        const zip = new JSZip();
+        const archivedBitcodeHashs = new Set();
+        let disassembleProgress = 0;
+        let zipProgress = 0;
+        const overallProgress = () => (disassembleProgress * 0.7 + zipProgress * 0.3);
+        progressCallback(overallProgress());
+        for (let i = 0; i < archive.functions.length; i += 1) {
+            const f = archive.functions[i];
             if (!archivedBitcodeHashs.has(f.bitcodeID)) {
                 const bitcode = Utilities.base64Decode(archive.bitcodeTable[f.bitcodeID]);
                 const ll = await this.disassemble(bitcode, f.bitcodeID);
                 zip.file(f.name + ".ll", ll);
                 archivedBitcodeHashs.add(f.bitcodeID);
             }
+            disassembleProgress = (i+1)/archive.functions.length;
+            progressCallback(overallProgress());
         }
-        const data = await zip.generateAsync({ type: "blob" })
+        const data = await zip.generateAsync({ type: "blob" }, (metadata) => {
+            zipProgress = metadata.percent / 100.0;
+            progressCallback(overallProgress());
+        });
         saveAs(data, name);
     }
 }
@@ -220,10 +230,27 @@ const AssemblyView = (props) => {
 };
 
 const AssemblyArchiveDownloadButton = ({ archive, fileName }) => {
+    const [isWorking, setIsWorking] = useState(false);
     return <div>
-        <button type="button" className="mt-2 text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-normal rounded-xl text-sm px-5 py-2.5 focus:outline-none" onClick={() => {
-            app.downloadAssemblyArchive(archive, fileName);
-        }}>Download Assembly.zip</button>
+        <div className="mt-2 text-white bg-blue-500 hover:bg-blue-600 rounded-xl overflow-hidden inline-block relative">
+            <div className={`absolute bg-blue-800 bottom-0 left-0 top-0 z-0 download-progress`}></div>
+            <button type="button" className="relative z-10 text-sm px-3 py-2.5 focus:ring-4 focus:ring-blue-300 focus:outline-none" onClick={(e) => {
+                if (isWorking) { return; }
+                const progressElement = e.currentTarget.parentNode.getElementsByClassName("download-progress")[0];
+                progressElement.style.width = `${0}%`;
+                app.downloadAssemblyArchive(archive, fileName, (progress) => {
+                    progressElement.style.width = `${progress * 100}%`;
+                }).then(() => {
+                    setIsWorking(false);
+                    progressElement.style.width = `${0}%`;
+                }).catch((error) => {
+                    setIsWorking(false);
+                    progressElement.style.width = `${0}%`;
+                    window.alert(error.message);
+                });
+                setIsWorking(true);
+            }}>Download Assembly.zip</button>
+        </div>
     </div>;
 };
 
@@ -298,7 +325,7 @@ const ArchiveView = ({ file }) => {
                     <ul className="p-6 space-y-4">
                         <li>
                             <div className="bg-blue-100 rounded-xl text-blue-900 text-sm overflow-hidden">
-                                <div className="px-4 py-3 font-medium bg-blue-500 text-white">{file.name}</div>
+                                <div className="px-4 py-2.5 font-medium bg-blue-500 text-white">{file.name}</div>
                                 <div className="p-4 space-y-1">
                                     <p><span className="font-bold mr-1">Size:</span><span>{formatFileSize(file.size, true)}</span></p>
                                     <p><span className="font-bold mr-1">Type:</span><span>{archive.type}</span></p>
@@ -364,7 +391,7 @@ export const AppView = () => {
                 <header className="w-full flex-none flex flex-row px-8 py-5 gap-16 z-50 border-b border-slate-900/10 bg-white/95 items-center">
                     <h1 className="flex-none relative">
                         <span className="text-3xl font-bold mr-2 italic bg-gradient-to-br from-purple-600 to-blue-500 text-transparent bg-clip-text">.metallib</span>
-                        <span className="absolute left-0 top-1 text-3xl font-bold mr-1 italic bg-gradient-to-br from-purple-600 to-blue-500 text-transparent bg-clip-text blur-lg">.metallib</span>
+                        <span className="absolute left-0 top-0 text-3xl font-bold mr-1 italic bg-gradient-to-br from-purple-600 to-blue-500 text-transparent bg-clip-text blur-md saturate-200 brightness-150">.metallib</span>
                         <span className="text-3xl font-normal text-blue-600">Explorer</span>
                     </h1>
                     <div className="flex-none">
