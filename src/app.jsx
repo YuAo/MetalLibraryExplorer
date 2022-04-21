@@ -8,7 +8,6 @@ import { saveAs } from 'file-saver';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import hljsLLVM from 'react-syntax-highlighter/dist/esm/languages/hljs/llvm';
 import hljsDocco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
-import hljsNightOwl from 'react-syntax-highlighter/dist/esm/styles/hljs/night-owl';
 
 SyntaxHighlighter.registerLanguage('llvm', hljsLLVM);
 
@@ -119,8 +118,8 @@ const SpinnerView = ({ tip }) => <div className="overflow-y-auto h-full w-full">
 const ErrorView = ({ title, error, recoveryTitle, recoveryAction }) => <div className="overflow-y-auto h-full w-full">
     <div className="h-full text-center block p-0 bg-slate-50">
         <span className="inline-block align-middle h-full">&#8203;</span>
-        <div className="inline-block align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all my-8 sm:max-w-lg sm:w-full">
-            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div className="inline-block bg-white align-middle rounded-lg text-left overflow-hidden shadow-xl transform transition-all my-8 sm:max-w-lg sm:w-full dark:shadow-none dark:bg-slate-200">
+            <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div className="sm:flex sm:items-start">
                     <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                         <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -135,7 +134,7 @@ const ErrorView = ({ title, error, recoveryTitle, recoveryAction }) => <div clas
                     </div>
                 </div>
             </div>
-            {recoveryTitle ? <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            {recoveryTitle ? <div className="bg-gray-100/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button type="button" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-slate-600 text-base font-medium text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 sm:ml-3 sm:w-auto sm:text-sm" onClick={recoveryAction}>{recoveryTitle}</button>
             </div> : null}
         </div>
@@ -179,7 +178,8 @@ const AssemblyView = (props) => {
             console.error('Fallback: Oops, unable to copy', err);
         }
         document.body.removeChild(textArea);
-    }
+    };
+
     const copyTextToClipboard = (text) => {
         if (!navigator.clipboard) {
             fallbackCopyTextToClipboard(text);
@@ -190,7 +190,7 @@ const AssemblyView = (props) => {
         }, function (err) {
             console.error('Async: Could not copy text: ', err);
         });
-    }
+    };
 
     const copyToClipboard = (event) => {
         var textToCopy = ll;
@@ -204,9 +204,7 @@ const AssemblyView = (props) => {
             button.disabled = false;
             copyText.innerHTML = 'Copy';
         }, 3000);
-    }
-
-    const style = useMediaQuery('(prefers-color-scheme: dark)') ? hljsNightOwl : hljsDocco;
+    };
 
     if (error) {
         return <ErrorView title={`Error disassembling "${props.function.name}"`} error={error} />;
@@ -214,14 +212,14 @@ const AssemblyView = (props) => {
         return <>
             <div className="flex-none p-6 sticky top-0 w-full backdrop-blur z-50 border-b border-slate-900/10 bg-slate-100 supports-backdrop-blur:bg-slate-100/75 flex gap-4">
                 <p className="font-mono font-medium py-1.5 text-slate-900 text-ellipsis overflow-hidden">{`${props.function.name}.ll`}</p>
-                <button type="button" className="flex-none flex items-center px-4 py-2 mr-3 text-xs font-medium text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none hover:text-blue-500 focus:z-10 focus:ring-2 focus:ring-gray-300 copy-to-clipboard-button" onClick={copyToClipboard}>
+                <button type="button" className="flex-none flex items-center px-4 py-2 mr-3 text-xs font-medium text-slate-900 bg-slate-50 border border-slate-900/10 rounded-lg focus:outline-none hover:text-blue-500 focus:z-10 focus:ring-2 focus:ring-gray-300 copy-to-clipboard-button" onClick={copyToClipboard}>
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                     <span className="copy-text">Copy</span>
                 </button>
             </div>
-            <div className="flex-1">
+            <div className="flex-1 dark:opacity-80">
                 {
-                    ll.length > 64 * 1024 ? <pre className="p-6">{ll}</pre> : <SyntaxHighlighter language="llvm" style={style} showLineNumbers={true} lineNumberStyle={{ opacity: 0.3 }}>{ll}</SyntaxHighlighter>
+                    ll.length > 64 * 1024 ? <pre className="p-6">{ll}</pre> : <SyntaxHighlighter language="llvm" style={hljsDocco} showLineNumbers={true} lineNumberStyle={{ opacity: 0.3 }}>{ll}</SyntaxHighlighter>
                 }
             </div>
         </>;
@@ -339,15 +337,16 @@ const ArchiveView = ({ file }) => {
                         {
                             filterFunctions(archive.functions, filter).map(f => {
                                 const isSelected = selectedFunction && (f.name == selectedFunction.name);
+                                const tagStyle = "px-2 py-1 text-[10px] font-medium text-slate-600 bg-gray-300 dark:bg-gray-300/60 rounded-full";
                                 return <li key={f.name}>
-                                    <a href="#" className={"block w-full space-y-2 p-4 font-mono rounded-xl " + (isSelected ? "bg-blue-500 hover:bg-blue-500 text-white" : "bg-slate-200 hover:bg-blue-100 text-slate-900")} onClick={(e) => { setSelectedFunction(f); e.preventDefault(); }}>
+                                    <a href="#" className={"block w-full space-y-3 px-4 py-3 font-mono rounded-xl " + (isSelected ? "bg-blue-500 hover:bg-blue-500 text-white" : "bg-slate-200 hover:bg-blue-100 text-slate-900")} onClick={(e) => { setSelectedFunction(f); e.preventDefault(); }}>
                                         <div>
                                             <span className="break-all inline">{f.name}</span>
                                         </div>
-                                        <div className="flex flex-row flex-wrap gap-1">
-                                            <span className="px-2 py-1 text-[10px] font-medium text-slate-600 bg-gray-300 rounded-full">{f.type}</span>
-                                            <span className="px-2 py-1 text-[10px] font-medium text-slate-600 bg-gray-300 rounded-full">{`MSL ${f.languageVersion.major}.${f.languageVersion.minor}`}</span>
-                                            <span className="px-2 py-1 text-[10px] font-medium text-slate-600 bg-gray-300 rounded-full">{`BC ${f.bitcodeID.substring(0, 6)}`}</span>
+                                        <div className="flex flex-row flex-wrap gap-1.5">
+                                            <span className={tagStyle}>{f.type}</span>
+                                            <span className={tagStyle}>{`MSL ${f.languageVersion.major}.${f.languageVersion.minor}`}</span>
+                                            <span className={tagStyle}>{`BC ${f.bitcodeID.substring(0, 6)}`}</span>
                                         </div>
                                     </a>
                                 </li>
@@ -386,9 +385,10 @@ export const AppView = () => {
         })();
     }, []);
 
+    const viewportStyle = "bg-slate-50 dark:invert dark:hue-rotate-180 dark:saturate-[.9]";
     if (isReady) {
         return (
-            <FullViewport className="flex flex-col bg-slate-50">
+            <FullViewport className={`flex flex-col ${viewportStyle}`}>
                 <header className="w-full flex-none flex flex-row px-8 py-5 gap-16 z-50 border-b border-slate-900/10 bg-white/95 items-center">
                     <h1 className="flex-none relative">
                         <span className="text-3xl font-bold mr-2 italic bg-gradient-to-br from-purple-600 to-blue-500 text-transparent bg-clip-text">.metallib</span>
@@ -396,7 +396,7 @@ export const AppView = () => {
                         <span className="text-3xl font-normal text-blue-600">Explorer</span>
                     </h1>
                     <div className="flex-none">
-                        <label className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg shadow-blue-500/50 font-medium rounded-xl text-sm px-5 py-3 text-center block cursor-pointer">
+                        <label className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:shadow-lg hover:shadow-blue-500/50 font-medium rounded-xl text-sm px-5 py-3 text-center block cursor-pointer transition-all duration-300">
                             <span className="mr-2">Open</span><span className="font-mono">.metallib</span>
                             <input type='file' accept=".metallib" className="hidden" onChange={(event) => {
                                 const fileList = event.target.files;
@@ -412,11 +412,11 @@ export const AppView = () => {
         );
     } else {
         if (error) {
-            return <FullViewport>
+            return <FullViewport className={viewportStyle}>
                 <ErrorView error={error} title="Error loading application" recoveryTitle="Reload" recoveryAction={() => { window.location.reload(); }} />;
             </FullViewport>;
         } else {
-            return <FullViewport>
+            return <FullViewport className={viewportStyle}>
                 <SpinnerView tip={progressInfo} />
             </FullViewport>;
         }
