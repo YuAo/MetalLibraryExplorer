@@ -2,6 +2,7 @@
 
 [![Build](https://github.com/YuAo/MetalLibraryExplorer/actions/workflows/build.yml/badge.svg)](https://github.com/YuAo/MetalLibraryExplorer/actions/workflows/build.yml)
 [![Deploy](https://github.com/YuAo/MetalLibraryExplorer/actions/workflows/deploy.yml/badge.svg)](https://github.com/YuAo/MetalLibraryExplorer/actions/workflows/deploy.yml)
+[![pages-build-deployment](https://github.com/YuAo/MetalLibraryExplorer/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/YuAo/MetalLibraryExplorer/actions/workflows/pages/pages-build-deployment)
 
 Parse and disassemble .metallib files in browser. https://yuao.github.io/MetalLibraryExplorer
 
