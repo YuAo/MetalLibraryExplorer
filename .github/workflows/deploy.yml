@@ -21,6 +21,9 @@ jobs:
       - run: npm install
       - run: npm run build
       
+      - name: Test
+        run: cd tests && npm install && npm run test
+      
       - name: Publish to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
