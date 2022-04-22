@@ -20,10 +20,6 @@ jobs:
 
       - run: npm install
       - run: npm run build
-      
-      - run: tar -czvf dist.tgz dist/
-      
-      - uses: actions/upload-artifact@v3
-        with:
-          name: dist
-          path: dist.tgz
+  
+      - name: Test
+        run: cd tests && npm install && npm run test
