@@ -127,9 +127,9 @@ const ErrorView = ({ title, error, recoveryTitle, recoveryAction }) => <div clas
                         </svg>
                     </div>
                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900">{title}</h3>
+                        <h3 className="text-lg leading-6 font-medium text-gray-900 error-title">{title}</h3>
                         <div className="mt-2">
-                            <p className="text-sm text-gray-500">{error.message}</p>
+                            <p className="text-sm text-gray-500 error-message">{error.message}</p>
                         </div>
                     </div>
                 </div>
@@ -211,13 +211,13 @@ const AssemblyView = (props) => {
     } else if (ll) {
         return <>
             <div className="flex-none p-6 sticky top-0 w-full backdrop-blur z-50 border-b border-slate-900/10 bg-slate-100 supports-backdrop-blur:bg-slate-100/75 flex gap-4">
-                <p className="font-mono font-medium py-1.5 text-slate-900 text-ellipsis overflow-hidden">{`${props.function.name}.ll`}</p>
+                <p className="font-mono font-medium py-1.5 text-slate-900 text-ellipsis overflow-hidden assembly-name">{`${props.function.name}.ll`}</p>
                 <button type="button" className="flex-none flex items-center px-4 py-2 mr-3 text-xs font-medium text-slate-900 bg-slate-50 border border-slate-900/10 rounded-lg focus:outline-none hover:text-blue-500 focus:z-10 focus:ring-2 focus:ring-gray-300 copy-to-clipboard-button" onClick={copyToClipboard}>
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                     <span className="copy-text">Copy</span>
                 </button>
             </div>
-            <div className="flex-1 dark:opacity-80">
+            <div className="flex-1 dark:opacity-80 assembly-code">
                 {
                     ll.length > 64 * 1024 ? <pre className="p-6">{ll}</pre> : <SyntaxHighlighter language="llvm" style={hljsDocco} showLineNumbers={true} lineNumberStyle={{ opacity: 0.3 }}>{ll}</SyntaxHighlighter>
                 }
@@ -233,7 +233,7 @@ const AssemblyArchiveDownloadButton = ({ archive, fileName }) => {
     return <div>
         <div className="mt-2 text-white bg-blue-500 hover:bg-blue-600 rounded-xl overflow-hidden inline-block relative">
             <div className={`absolute bg-blue-800 bottom-0 left-0 top-0 z-0 download-progress`}></div>
-            <button type="button" className="relative z-10 text-sm px-3 py-2.5 focus:ring-4 focus:ring-blue-300 focus:outline-none" onClick={(e) => {
+            <button type="button" className="relative z-10 text-sm px-3 py-2.5 focus:ring-4 focus:ring-blue-300 focus:outline-none download-button" onClick={(e) => {
                 if (isWorking) { return; }
                 const progressElement = e.currentTarget.parentNode.getElementsByClassName("download-progress")[0];
                 progressElement.style.width = `${0}%`;
@@ -322,9 +322,9 @@ const ArchiveView = ({ file }) => {
                         </div>
                     </div>
                     <ul className="p-6 space-y-4">
-                        <li>
+                        <li className="library-info">
                             <div className="bg-blue-100 rounded-xl text-blue-900 text-sm overflow-hidden">
-                                <div className="px-4 py-2.5 font-medium bg-blue-500 text-white">{file.name}</div>
+                                <div className="px-4 py-2.5 font-medium bg-blue-500 text-white file-name">{file.name}</div>
                                 <div className="p-4 space-y-1">
                                     <p><span className="font-bold mr-1">Size:</span><span>{formatFileSize(file.size, true)}</span></p>
                                     <p><span className="font-bold mr-1">Type:</span><span>{archive.type}</span></p>
@@ -338,7 +338,7 @@ const ArchiveView = ({ file }) => {
                             filterFunctions(archive.functions, filter).map(f => {
                                 const isSelected = selectedFunction && (f.name == selectedFunction.name);
                                 const tagStyle = "px-2 py-1 text-[10px] font-medium text-slate-600 bg-gray-300 dark:bg-gray-300/60 rounded-full";
-                                return <li key={f.name}>
+                                return <li key={f.name} className="function-info">
                                     <a href="#" className={"block w-full space-y-3 px-4 py-3 font-mono rounded-xl " + (isSelected ? "bg-blue-500 hover:bg-blue-500 text-white" : "bg-slate-200 hover:bg-blue-100 text-slate-900")} onClick={(e) => { setSelectedFunction(f); e.preventDefault(); }}>
                                         <div>
                                             <span className="break-all inline">{f.name}</span>
