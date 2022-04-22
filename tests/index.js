@@ -6,6 +6,8 @@ const http = require('http');
 const express = require('express');
 const { Builder, By, Key, until } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
+const os = require('os');
+const fs = require('fs');
 
 (async function runTests() {
     const distDirectory = path.resolve(__dirname, '../dist');
@@ -20,9 +22,19 @@ const chrome = require('selenium-webdriver/chrome');
         width: 1440,
         height: 900
     };
+    const tempDir = await new Promise((resolve, reject) => {
+        fs.mkdtemp(path.join(os.tmpdir(), 'foo-'), (err, dir) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(dir);
+            }
+        });
+    });
+    console.log('Downloads to: ' + tempDir);
     
     const driver = await new Builder().forBrowser('chrome')
-    .setChromeOptions(new chrome.Options().headless().windowSize(screen))
+    .setChromeOptions(new chrome.Options().headless().windowSize(screen).setUserPreferences({'download.default_directory': tempDir}))
     .build();
     
     try {
@@ -43,6 +55,14 @@ const chrome = require('selenium-webdriver/chrome');
             await driver.wait(until.elementLocated(By.css('.assembly-code')), 3000);
             const assemblyTitle = await driver.findElement(By.css('.assembly-name')).getText();
             assert.deepEqual(assemblyTitle, 'bouncingBallCompute.ll');
+            await driver.findElement(By.css('.download-button')).click();
+            await new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve();
+                }, 3000);
+            });
+            const downloadedFile = path.resolve(tempDir, 'test.metallib.ll.zip');
+            assert.deepEqual(fs.existsSync(downloadedFile), true);
         })();
         
         await (async () => {
