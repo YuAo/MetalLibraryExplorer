@@ -16,7 +16,7 @@
   "devDependencies": {
     "@babel/preset-react": "^7.16.7",
     "autoprefixer": "^10.4.4",
-    "babel-loader": "^8.2.4",
+    "babel-loader": "^8.2.5",
     "buffer": "^6.0.3",
     "css-loader": "^6.7.1",
     "html-webpack-plugin": "^5.5.0",
