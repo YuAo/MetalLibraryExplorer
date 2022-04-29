@@ -277,7 +277,8 @@ const ArchiveView = ({ file }) => {
     const filterFunctions = (functions, filter) => {
         return functions.filter(f => {
             if (filter && filter.trim().length > 0) {
-                return f.name.includes(filter.trim()) || f.type.includes(filter.trim());
+                const query = filter.trim().toLowerCase();
+                return f.name.toLowerCase().includes(query) || f.type.toLowerCase().includes(query);
             } else {
                 return true;
             }
