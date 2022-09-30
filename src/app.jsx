@@ -1,4 +1,4 @@
-import { MetalLibraryParser_WebWorker } from "./parser.js";
+import { MetalLibraryParser } from "./parser.js";
 import { LLVMDisassembler } from "./disassembler.js";
 import { Utilities } from "./utilities.js";
 import React, { useState, useEffect } from 'react';
@@ -32,31 +32,15 @@ const useMediaQuery = (query) => {
 
 class App {
     async load(progressCallback) {
-        progressCallback("Loading Parser...");
         this.disassemblerCache = {};
-        /*
-        await init();
-        const parserProgram = await (async () => {
-            let wasi = new WASI({
-                env: {},
-                args: []
-            });
-            const moduleData = fetch(new URL('./MetalLibraryArchiveParser/.build/release/MetalLibraryArchiveParser.wasm', import.meta.url));
-            const module = await WebAssembly.compileStreaming(moduleData);
-            const instance = await wasi.instantiate(module, {});
-            return new MetalLibraryParserProgram(wasi, instance);
-        })();
-        this.parser = new MetalLibraryParser(parserProgram);
-        */
-        // Have to use a web worker here to run in Chrome. https://github.com/wasmerio/wasmer/issues/2792
-        this.parser = new MetalLibraryParser_WebWorker(new Worker(new URL('./parser-worker.js', import.meta.url)));
-        await this.parser.init();
+
+        progressCallback("Loading Parser...");
+        let parserModule = await fetch(new URL('./MetalLibraryArchiveParser/.build/release/MetalLibraryArchiveParser.wasm', import.meta.url));
+        this.parser = await MetalLibraryParser.makeParser(parserModule);
 
         progressCallback("Loading Disassembler...");
-        let disassemblerModuleData = await fetch(new URL("./llvm-dis.wasm", import.meta.url));
-        // Wait for data loading.
-        await disassemblerModuleData.clone().blob();
-        this.disassembler = new LLVMDisassembler(disassemblerModuleData);
+        let disassemblerModule = await fetch(new URL("./llvm-dis.wasm", import.meta.url));
+        this.disassembler = await LLVMDisassembler.makeDisassembler(disassemblerModule);
 
         progressCallback("Ready.");
     }

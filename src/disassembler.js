@@ -1,10 +1,17 @@
 import LLVMDis from "./llvm-dis.js";
 
 export class LLVMDisassembler {
+    
+    static async makeDisassembler(moduleResponse) {
+        await moduleResponse.clone().blob();
+        return new LLVMDisassembler(moduleResponse);
+    }
+
     constructor(programData) {
         this.programData = programData;
         this.textDecoder = new TextDecoder();
     }
+
     async disassemble(bitcode) {
         // Cannot reset heap/stack after callMain. Need a new instance each time.
         const program = await new LLVMDis({

@@ -8,9 +8,25 @@ export class MetalLibraryParserProgram {
 }
 
 export class MetalLibraryParser {
+
+    static async makeParser(moduleResponse) {
+        await init();
+        let wasi = new WASI({
+            env: {},
+            args: []
+        });
+        const module = await WebAssembly.compileStreaming(moduleResponse);
+        const importObject = wasi.getImports(module);
+        const webAssemblyInstance = await WebAssembly.instantiate(module, importObject);
+        const instance = wasi.instantiate(webAssemblyInstance, {});
+        const parserProgram = new MetalLibraryParserProgram(wasi, instance);
+        return new MetalLibraryParser(parserProgram);
+    }
+
     constructor(program) {
         this.program = program;
     }
+    
     async parse(buffer) {
         const parseMetalLib = this.program.instance.exports.parseMetalLib;
         const parser = this.program.wasi;
@@ -31,41 +47,5 @@ export class MetalLibraryParser {
         const outputFile = parser.fs.open("/output.json", { read: true });
         const archive = JSON.parse(outputFile.readString());
         return archive;
-    }
-}
-
-export class MetalLibraryParser_WebWorker {
-    constructor(worker) {
-        this.messageID = 0;
-        this.callbacks = {};
-        this.worker = worker;
-        this.worker.onmessage = (event) => {
-            const { id, errorMessage, result } = event.data;
-            if (id in this.callbacks) {
-                const callback = this.callbacks[id];
-                if (errorMessage) {
-                    callback.reject(new Error(errorMessage));
-                } else {
-                    callback.resolve(result);
-                }
-                delete this.callbacks[id];
-            }
-        };
-    }
-
-    init() {
-        return new Promise((resolve, reject) => {
-            this.messageID += 1;
-            this.callbacks[this.messageID] = { resolve, reject };
-            this.worker.postMessage({ id: this.messageID, action: "init" });
-        });
-    }
-
-    parse(buffer) {
-        return new Promise((resolve, reject) => {
-            this.messageID += 1;
-            this.callbacks[this.messageID] = { resolve, reject };
-            this.worker.postMessage({ id: this.messageID, action: "parse", buffer }, [buffer]);
-        });
     }
 }
