@@ -377,11 +377,10 @@ export const AppView = () => {
                 <header className="w-full flex-none flex flex-row px-8 py-5 gap-16 z-50 border-b border-slate-900/10 bg-white/95 items-center">
                     <h1 className="flex-none relative">
                         <span className="text-3xl font-bold mr-2 italic bg-gradient-to-br from-purple-600 to-blue-500 text-transparent bg-clip-text">.metallib</span>
-                        <span className="absolute left-0 top-0 text-3xl font-bold mr-1 italic bg-gradient-to-br from-purple-600 to-blue-500 text-transparent bg-clip-text blur-md saturate-200 brightness-150">.metallib</span>
                         <span className="text-3xl font-normal text-blue-600">Explorer</span>
                     </h1>
                     <div className="flex-none">
-                        <label className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:shadow-lg hover:shadow-blue-500/50 font-medium rounded-xl text-sm px-5 py-3 text-center block cursor-pointer transition-all duration-300">
+                        <label className="text-white bg-slate-900 hover:bg-slate-700 font-medium rounded-xl text-sm px-3.5 py-2.5 text-center block cursor-pointer transition-all duration-200">
                             <span className="mr-2">Open</span><span className="font-mono">.metallib</span>
                             <input type='file' accept=".metallib" className="hidden" onChange={(event) => {
                                 const fileList = event.target.files;
