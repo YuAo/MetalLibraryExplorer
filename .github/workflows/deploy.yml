@@ -13,7 +13,7 @@ jobs:
 
       - name: Setup SDKs
         run: |
-          curl https://github.com/swiftwasm/swift/releases/download/swift-wasm-5.6.0-RELEASE/swift-wasm-5.6.0-RELEASE-macos_x86_64.pkg -L -o swift-wasm-toolchain.pkg
+          curl https://github.com/swiftwasm/swift/releases/download/swift-wasm-5.7.1-RELEASE/swift-wasm-5.7.1-RELEASE-macos_x86_64.pkg -L -o swift-wasm-toolchain.pkg
           sudo installer -pkg swift-wasm-toolchain.pkg -target /
           brew install wabt
           brew install binaryen
