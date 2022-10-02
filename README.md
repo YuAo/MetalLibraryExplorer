@@ -22,7 +22,7 @@ Parse and disassemble .metallib files in browser. https://yuao.github.io/MetalLi
 
 The parser uses a WebAssembly version of the [MetalLibraryArchive](https://github.com/YuAo/MetalLibraryArchive) core library, built with [SwiftWasm](https://github.com/swiftwasm/swift).
 
-[wasmer-js](https://github.com/wasmerio/wasmer-js) is used as WASI polyfill. However due to [wasmer/issues/2792](https://github.com/wasmerio/wasmer/issues/2792), the parser has to run in a Web Worker.
+[wasmer-js](https://github.com/wasmerio/wasmer-js) is used as WASI polyfill. ~~However due to [wasmer/issues/2792](https://github.com/wasmerio/wasmer/issues/2792), the parser has to run in a Web Worker.~~
 
 `wasm-strip` from [WABT](https://github.com/WebAssembly/wabt) and `wasm-opt` from [binaryen](https://github.com/WebAssembly/binaryen) are used mainly to reduce the `.wasm` binary size.
 
