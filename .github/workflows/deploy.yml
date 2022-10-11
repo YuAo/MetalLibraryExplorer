@@ -24,9 +24,12 @@ jobs:
       - name: Test
         run: cd tests && npm install && npm run test
       
-      - name: Publish to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@4.1.1
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          branch: gh-pages
-          folder: dist/
-          single-commit: true
+          path: 'dist'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
