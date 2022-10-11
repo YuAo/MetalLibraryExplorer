@@ -16,6 +16,9 @@ concurrency:
   
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
