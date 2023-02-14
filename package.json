@@ -30,7 +30,7 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "@wasmer/wasi": "^1.1.2",
+    "@wasmer/wasi": "^1.2.2",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "react": "^18.2.0",
