@@ -34,7 +34,12 @@ const fs = require('fs');
     console.log('Downloads to: ' + tempDir);
     
     const driver = await new Builder().forBrowser('chrome')
-    .setChromeOptions(new chrome.Options().headless().windowSize(screen).setUserPreferences({'download.default_directory': tempDir}))
+    .setChromeOptions(
+        new chrome.Options()
+        .addArguments("--headless=new")
+        .windowSize(screen)
+        .setUserPreferences({'download.default_directory': tempDir})
+    )
     .build();
     
     try {
