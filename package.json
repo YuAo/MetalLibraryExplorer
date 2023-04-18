@@ -19,7 +19,7 @@
     "babel-loader": "^9.1.2",
     "buffer": "^6.0.3",
     "css-loader": "^6.7.3",
-    "html-webpack-plugin": "^5.5.0",
+    "html-webpack-plugin": "^5.5.1",
     "postcss": "^8.4.22",
     "postcss-loader": "^7.2.4",
     "style-loader": "^3.3.2",
