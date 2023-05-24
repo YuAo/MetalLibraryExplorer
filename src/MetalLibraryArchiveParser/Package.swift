@@ -17,7 +17,7 @@ let package = Package(
             name: "MetalLibraryArchiveParser",
             targets: ["MetalLibraryArchiveParser"]),
     ],
-    dependencies: [.package(url: "https://github.com/YuAo/MetalLibraryArchive.git", from: "0.0.6")],
+    dependencies: [.package(url: "https://github.com/YuAo/MetalLibraryArchive.git", from: "0.0.7")],
     targets: [
         .executableTarget(name: "MetalLibraryArchiveParser", dependencies: ["MetalLibraryArchive"]),
     ]
